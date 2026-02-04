@@ -41,6 +41,8 @@ export function useDeviceOrientationGranted() {
       typeof window.DeviceOrientationEvent.requestPermission === 'function';
 
     if (!hasRequest) {
+      setValue(true);
+
       return undefined;
     }
 
