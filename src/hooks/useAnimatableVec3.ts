@@ -38,11 +38,11 @@ export function useAnimatableVec3(
     return () => raf.destroy();
   }, [easeProp, frictionProp]);
 
-  const setTarget = useCallback((vec3: Vector3) => {
+  const iterateTarget = useCallback((vec3: Vector3) => {
     targetRef.current.x += vec3.x;
     targetRef.current.y += vec3.y;
     targetRef.current.z += vec3.z;
   }, []);
 
-  return { setTarget };
+  return { iterateTarget };
 }

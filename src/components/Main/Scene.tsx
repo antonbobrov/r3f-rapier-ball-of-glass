@@ -7,27 +7,27 @@ import { Group, Vector3 } from 'three';
 import { useAnimatableVec3 } from '@/hooks/useAnimatableVec3';
 import { useDeviceOrientationDelta } from '@/hooks/useDeviceOrientationDelta';
 import { useMouseMoveDelta } from '@/hooks/useMouseMoveDelta';
+import { useScreenPositionDelta } from '@/hooks/useScreenPositionDelta';
 
 import { Model } from './Model';
 import { Pointer } from './Pointer';
 
-const parallax = 2;
 const rotation = Math.PI * 0.6;
 
 export const Scene: FC = () => {
   const groupRef = useRef<Group>(null);
 
-  const { setTarget: setPositionTarget } = useAnimatableVec3(
+  const { iterateTarget: iteratePositionTarget } = useAnimatableVec3(
     ({ x, y }) => {
       const group = groupRef.current!;
 
-      group.position.set(x * parallax, -y * parallax, 0);
+      group.position.set(x, -y, 0);
     },
     0.02,
     0.1,
   );
 
-  const { setTarget: setRotationTarget } = useAnimatableVec3(
+  const { iterateTarget: iterateRotationTarget } = useAnimatableVec3(
     ({ x, y, z }) => {
       const group = groupRef.current!;
 
@@ -40,8 +40,16 @@ export const Scene: FC = () => {
   useMouseMoveDelta(({ x, y }) => {
     const vec = new Vector3(x, y, 0);
 
-    setPositionTarget(vec);
-    setRotationTarget(vec);
+    iteratePositionTarget(vec);
+    iterateRotationTarget(vec);
+  });
+
+  useScreenPositionDelta(({ x, y }) => {
+    const strength = 5;
+    const vec = new Vector3(-x * strength, -y * strength, 0);
+
+    iteratePositionTarget(vec);
+    iterateRotationTarget(vec);
   });
 
   useDeviceOrientationDelta(({ gamma, beta }) => {
@@ -59,8 +67,8 @@ export const Scene: FC = () => {
       0,
     );
 
-    setRotationTarget(rotationVector);
-    setPositionTarget(positionVector);
+    iterateRotationTarget(rotationVector);
+    iteratePositionTarget(positionVector);
   });
 
   return (
