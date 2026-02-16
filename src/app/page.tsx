@@ -1,15 +1,20 @@
-import { Suspense } from 'react';
+'use client';
 
 import { Main } from '@/components/Main';
+import { useIsMounted } from '@/hooks/useIsMounted';
 
-const Home = () => (
-  <Suspense>
+const Home = () => {
+  const isMounted = useIsMounted();
+
+  if (!isMounted) {
+    return null;
+  }
+
+  return (
     <div className="scene">
-      <Suspense fallback={null}>
-        <Main />
-      </Suspense>
+      <Main />
     </div>
-  </Suspense>
-);
+  );
+};
 
 export default Home;

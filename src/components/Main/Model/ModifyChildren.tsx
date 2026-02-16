@@ -1,13 +1,12 @@
-import { cloneElement, FC, ReactElement } from 'react';
+import { cloneElement, FC } from 'react';
 
-import { material } from './material';
 import { ModelRigidBody } from './RigidBody';
+import { IModifyChildrenProps } from './types';
 
-interface IProps {
-  children: ReactElement[];
-}
-
-export const Modify: FC<IProps> = ({ children }) =>
+export const ModifyChildren: FC<IModifyChildrenProps> = ({
+  material,
+  children,
+}) =>
   children.map((child, i) => (
     <ModelRigidBody key={child.key || i}>
       {cloneElement(child, { material: material } as any)}
