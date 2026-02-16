@@ -9,6 +9,7 @@ import { useAnimatableVec3 } from '@/hooks/useAnimatableVec3';
 import { useDeviceOrientationDelta } from '@/hooks/useDeviceOrientationDelta';
 import { useMouseMoveDelta } from '@/hooks/useMouseMoveDelta';
 import { useScreenPositionDelta } from '@/hooks/useScreenPositionDelta';
+import { useShake } from '@/hooks/useShake';
 
 import { useRotationOnState } from './hooks/useRotationOnState';
 import { Model } from './Model';
@@ -31,6 +32,8 @@ export const Scene: FC = () => {
 
     return () => listener();
   }, []);
+
+  useShake(() => setIsSphere((val) => !val));
 
   const { iterateTarget: iteratePositionTarget } = useAnimatableVec3(
     ({ x, y }) => {
