@@ -24,8 +24,7 @@ export const Main: FC = () => {
         gl={async ({ canvas }) => {
           const renderer = new WebGPURenderer({
             canvas: canvas as any,
-            alpha: false,
-            stencil: false,
+            alpha: true,
             antialias: false,
           });
 

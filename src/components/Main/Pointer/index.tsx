@@ -8,9 +8,11 @@ import { useDeviceOrientationDelta } from '@/hooks/useDeviceOrientationDelta';
 import { useMouseMoveDelta } from '@/hooks/useMouseMoveDelta';
 import { useScreenPositionDelta } from '@/hooks/useScreenPositionDelta';
 
+import { IProps } from './types';
+
 const parallax = 1.5;
 
-export const Pointer: FC = () => {
+export const Pointer: FC<IProps> = ({ ref }) => {
   const bodyRef = useRef<RapierRigidBody>(null);
 
   const { iterateTarget } = useAnimatableVec3(({ x, y }) => {
@@ -36,22 +38,11 @@ export const Pointer: FC = () => {
 
   return (
     <RigidBody ref={bodyRef} type="kinematicPosition">
-      <group>
+      <group ref={ref} scale={0.75}>
         <mesh>
-          <sphereGeometry args={[0.75, 32, 32]} />
+          <sphereGeometry args={[1, 32, 32]} />
 
           <meshBasicMaterial transparent opacity={0} />
-        </mesh>
-
-        <mesh>
-          <sphereGeometry args={[0.5, 32, 32]} />
-
-          <meshStandardMaterial
-            color={0x999999}
-            emissive={0x555555}
-            metalness={0.0}
-            roughness={0.5}
-          />
         </mesh>
       </group>
     </RigidBody>

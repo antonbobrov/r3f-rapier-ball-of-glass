@@ -1,25 +1,40 @@
-import { FC, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 
 import { Environment } from '@react-three/drei';
 import { Physics } from '@react-three/rapier';
-import { Group, Vector3 } from 'three';
+import { Group, Mesh, Vector3 } from 'three';
+import { addEventListener } from 'vevet';
 
 import { useAnimatableVec3 } from '@/hooks/useAnimatableVec3';
 import { useDeviceOrientationDelta } from '@/hooks/useDeviceOrientationDelta';
 import { useMouseMoveDelta } from '@/hooks/useMouseMoveDelta';
 import { useScreenPositionDelta } from '@/hooks/useScreenPositionDelta';
 
+import { useRotationOnState } from './hooks/useRotationOnState';
 import { Model } from './Model';
 import { Pointer } from './Pointer';
+import { Sphere } from './Sphere';
 
 const rotation = Math.PI * 0.6;
 
 export const Scene: FC = () => {
-  const groupRef = useRef<Group>(null);
+  const rotationGroupRef = useRef<Group>(null);
+  const positionGroupRef = useRef<Group>(null);
+  const pointerRef = useRef<Mesh>(null);
+
+  const [isSphere, setIsSphere] = useState(false);
+
+  useEffect(() => {
+    const listener = addEventListener(window, 'click', () => {
+      setIsSphere((val) => !val);
+    });
+
+    return () => listener();
+  }, []);
 
   const { iterateTarget: iteratePositionTarget } = useAnimatableVec3(
     ({ x, y }) => {
-      const group = groupRef.current!;
+      const group = positionGroupRef.current!;
 
       group.position.set(x, -y, 0);
     },
@@ -29,7 +44,7 @@ export const Scene: FC = () => {
 
   const { iterateTarget: iterateRotationTarget } = useAnimatableVec3(
     ({ x, y, z }) => {
-      const group = groupRef.current!;
+      const group = positionGroupRef.current!;
 
       group.rotation.set(y * rotation, x * rotation, z * rotation);
     },
@@ -71,17 +86,23 @@ export const Scene: FC = () => {
     iteratePositionTarget(positionVector);
   });
 
+  useRotationOnState(rotationGroupRef, isSphere);
+
   return (
     <>
       <Environment files="env/warehouse.hdr" environmentIntensity={1} />
 
-      <Physics gravity={[0, 0, 0]} colliders="hull">
-        <group ref={groupRef} scale={1}>
-          <Pointer />
+      <group ref={rotationGroupRef}>
+        <Physics gravity={[0, 0, 0]} colliders="hull">
+          <group ref={positionGroupRef} scale={1}>
+            <Pointer ref={pointerRef} />
 
-          <Model />
-        </group>
-      </Physics>
+            <Model pointerRef={pointerRef} isVisible={!isSphere} />
+
+            <Sphere pointerRef={pointerRef} isVisible={isSphere} scale={1} />
+          </group>
+        </Physics>
+      </group>
     </>
   );
 };
